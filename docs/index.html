@@ -12,8 +12,9 @@
     body{
       margin:0;
       font-family:ui-sans-serif,system-ui,-apple-system,"SF Pro Text",Segoe UI,Roboto,Helvetica,Arial;
-      display:grid;grid-template-rows:1fr auto; /* 内容 + 吸底 footer */
-      min-height:100vh;background:#f7f8fb;box-sizing:border-box
+      min-height:100vh;
+      background:#f7f8fb;
+      box-sizing:border-box
     }
     .content{display:grid;grid-template-columns:320px 1fr;gap:var(--gap);padding:20px;box-sizing:border-box}
 
@@ -33,7 +34,7 @@
     select, textarea{border:1px solid var(--panel-line);border-radius:10px;padding:8px;background:#fff}
     button{padding:8px 12px;border-radius:10px;border:1px solid var(--panel-line);background:#fafafa;cursor:pointer}
     .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-    textarea{width:100%;height:220px;border-radius:12px;resize:vertical} /* 只纵向拉伸 */
+    textarea{width:100%;height:180px;border-radius:12px;resize:vertical} /* 只纵向拉伸 */
     .divider{height:1px;background:var(--panel-line);margin:10px 0}
 
     /* 主按钮（固定高亮，不随主题） */
@@ -45,6 +46,9 @@
     /* 使用方式 */
     .help{font-size:16px;line-height:1.65;color:#475569;background:#f3f5f8;border:1px dashed #d9dee7;border-radius:10px;padding:10px}
     .help b{font-weight:600}
+    .help-steps{margin:0;padding-left:20px;color:inherit;font-size:15px;line-height:1.6}
+    .help-steps li{margin-bottom:6px}
+    .help-tip{margin:8px 0 0;font-size:13px;color:#64748b}
 
     /* 导出区：textarea 悬停显示右上角按钮 */
     .export-wrap{position:relative}
@@ -55,15 +59,13 @@
 
     /* 右侧预览框 */
     .preview{border:1px solid rgba(0,0,0,.08);border-radius:12px;overflow:hidden;background:#fff}
-    .preview-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);background:var(--bg-elev)}
+    .preview-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);background:var(--bg-elev)}
     .preview-title{font-weight:600;color:var(--text-1)}
     .preview-sub{font-size:12px;color:#e11d48;font-weight:600}
-
-    /* 吸底页脚 */
-    footer{display:flex;justify-content:center;align-items:center;gap:8px;text-align:center;padding:12px 0;font-size:12px;color:#94a3b8}
-    .footer-link{display:inline-flex;align-items:center;gap:6px;color:inherit;text-decoration:none;font-weight:500}
-    .footer-link:hover{color:#64748b}
-    .footer-link svg{width:16px;height:16px;fill:currentColor}
+    .preview-info{display:flex;flex-direction:column;gap:4px}
+    .repo-link{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;color:var(--text-2,#475569);text-decoration:none;border:1px solid rgba(148,163,184,.4);transition:color .2s ease,background .2s ease,border-color .2s ease}
+    .repo-link:hover{color:#1f2937;border-color:#94a3b8;background:rgba(148,163,184,.12)}
+    .repo-link svg{width:16px;height:16px;fill:currentColor}
   </style>
 </head>
 <body>
@@ -102,17 +104,20 @@
 
       <div class="divider"></div>
 
-      <h3>使用方式</h3>
+      <h4>使用方式</h4>
       <div class="help">
-        1 在左侧选择预设主题，或拖动 Hue / Sat / Light 自定义；如需夜间预览，勾选 <b>Dark 模式</b>。<br>
-        2 右侧同步显示主题效果（仅为 V 站部分组件的简化还原）。<br>
-        3 满意后点击 <b>复制完整 CSS</b>，到 V2EX 设置 → <b>自定义 CSS</b> 中粘贴即可生效。
+        <ol class="help-steps">
+          <li>在左侧选择预设主题，或拖动 Hue / Sat / Light 自定义主色；如需夜间预览，勾选 <b>Dark 模式</b>。</li>
+          <li>确认右侧预览同步效果，必要时使用 <b>重置</b> 按钮恢复默认设置。</li>
+          <li>点击 <b>复制完整 CSS</b> 按钮，将完整样式复制到剪贴板。</li>
+          <li>前往 V2EX → 设置 → <b>自定义 CSS</b> 粘贴替换，即可生效。</li>
+        </ol>
       </div>
 
       <div class="divider"></div>
-      <h3>导出内容（完整 CSS）</h3>
+      <h4>导出内容（完整 CSS）</h4>
       <div class="export-wrap">
-        <button id="copyCssFloat" class="btn-primary btn-compact" type="button">复制</button>
+        <button id="copyCssFloat" class="btn-primary btn-compact" type="button">复制完整 CSS</button>
         <textarea id="snippet" readonly></textarea>
       </div>
     </aside>
@@ -120,8 +125,13 @@
     <!-- 右侧预览 -->
     <main class="preview" id="preview">
       <div class="preview-head">
-        <div class="preview-title" id="titleCN">主题效果预览：铁锈橙红</div>
-        <div class="preview-sub">这里只是简化还原 V 站部分组件，真实效果请在 V 站替换 CSS 查看</div>
+        <div class="preview-info">
+          <div class="preview-title" id="titleCN">主题效果预览：铁锈橙红</div>
+          <div class="preview-sub">这里只是简化还原 V 站部分组件，真实效果请在 V 站替换 CSS 查看</div>
+        </div>
+        <a class="repo-link" href="https://github.com/rockfang/v2ex-skin-demo" target="_blank" rel="noopener" aria-label="访问 GitHub 仓库">
+          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 .198a8 8 0 0 0-2.53 15.59c.4.074.547-.174.547-.386 0-.19-.007-.693-.01-1.36-2.226.483-2.695-1.073-2.695-1.073-.364-.924-.89-1.17-.89-1.17-.727-.497.055-.487.055-.487.804.057 1.227.826 1.227.826.714 1.223 1.873.87 2.329.665.072-.517.28-.87.508-1.07-1.777-.202-3.644-.888-3.644-3.955 0-.874.312-1.589.824-2.15-.083-.202-.357-1.017.078-2.12 0 0 .67-.215 2.195.82a7.64 7.64 0 0 1 2-.27 7.64 7.64 0 0 1 2 .27c1.524-1.035 2.193-.82 2.193-.82.437 1.103.163 1.918.08 2.12.513.561.823 1.276.823 2.15 0 3.075-1.87 3.75-3.652 3.95.288.25.544.739.544 1.49 0 1.075-.01 1.94-.01 2.204 0 .214.145.463.55.384A8 8 0 0 0 8 .198"/></svg>
+        </a>
       </div>
 
       <!-- 顶部导航（含搜索） -->
@@ -245,14 +255,13 @@
         </div>
       </div>
     </main>
-  </div>
-
-  <footer><a class="footer-link" href="https://github.com/rockfang/v2ex-skin-demo" target="_blank" rel="noopener">
-      <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 .198a8 8 0 0 0-2.53 15.59c.4.074.547-.174.547-.386 0-.19-.007-.693-.01-1.36-2.226.483-2.695-1.073-2.695-1.073-.364-.924-.89-1.17-.89-1.17-.727-.497.055-.487.055-.487.804.057 1.227.826 1.227.826.714 1.223 1.873.87 2.329.665.072-.517.28-.87.508-1.07-1.777-.202-3.644-.888-3.644-3.955 0-.874.312-1.589.824-2.15-.083-.202-.357-1.017.078-2.12 0 0 .67-.215 2.195.82a7.64 7.64 0 0 1 2-.27 7.64 7.64 0 0 1 2 .27c1.524-1.035 2.193-.82 2.193-.82.437 1.103.163 1.918.08 2.12.513.561.823 1.276.823 2.15 0 3.075-1.87 3.75-3.652 3.95.288.25.544.739.544 1.49 0 1.075-.01 1.94-.01 2.204 0 .214.145.463.55.384A8 8 0 0 0 8 .198"/></svg>
-      <span>rockfang/v2ex-skin-demo</span>
-    </a></footer>
-
-  <script src="./app.js"></script>
+  </div><script src="./app.js"></script>
 </body>
 </html>
+
+
+
+
+
+
 

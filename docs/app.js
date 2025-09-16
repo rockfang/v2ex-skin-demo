@@ -78,10 +78,10 @@
   async function copyCssText(){
     try{
       await navigator.clipboard.writeText(snippet.value);
-      alert('已复制完整 CSS 到剪贴板！');
+      alert('复制成功！ 请前往V2EX使用');
     }catch(err){
       snippet.focus(); snippet.select(); document.execCommand('copy');
-      alert('已复制（兼容模式）');
+      alert('复制成功！ 请前往V2EX使用');
     }
   }
 

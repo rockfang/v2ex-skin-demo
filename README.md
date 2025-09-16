@@ -1,4 +1,5 @@
-﻿# Serene Glass - V2EX 主题（工程化发行版）
+﻿
+# V 站 Glass 主题定制
 
 这是一套可工程化分发的 V2EX 自定义主题：支持明暗模式、变量化主色、可在线预览与一键复制。
 
@@ -7,13 +8,14 @@
 ## 你可以做什么
 - **预设主题**：内置 6 套主题色系（Denim, Pine, Amber, Rust, Slate, Seafoam）
 - **网站演示**：`/docs` 提供一个静态预览器：切换预设、模拟暗色、微调 H/S/L 并一键复制 CSS
-- **覆盖说明**：见下方“覆盖范围”章节（页面、组件、选择器清单）
-- **TODO CDN 引用**：从 GitHub + jsDelivr / 你自己的 CDN 引用 `themes/*.min.css`
+- **覆盖说明**：见下方“覆盖范围”章节（页面、组件、选择器清单
 
 ## 快速使用
-通过访问 `docs/index.html` 在线调试生成需要的 CSS，一键复制 CSS；
-在 V2EX → 设置 → 自定义 CSS 粘贴。
-> 提醒：也可直接粘贴 `themes/*.min.css` 的全文（<5K）。
+1. 打开[在线预览](https://rockfang.github.io/v2ex-skin-demo/) 或本地启动 `docs/index.html`。
+2. 在面板中选择预设主题，或拖动 Hue / Sat / Light，并按需切换 Dark 模式确认夜间效果。
+3. 点击左侧 “复制完整 CSS” 按钮，将生成的完整样式放入剪贴板。
+4. 前往 V2EX → 设置 → 自定义 CSS 粘贴覆盖现有内容。
+> 可以整份复制 `themes/*.min.css`（<5K）。
 
 ## 目录
 ```
@@ -35,8 +37,7 @@ serene-glass-product/
 ├─ docs/
 │  ├─ index.html                # 预览器入口（也可以部署到 GitHub Pages）
 │  ├─ app-base.css              # 预览器使用的基线主题（Denim）
-│  ├─ app.js
-│  └─ RELEASING.md              # 发版 & CDN 引用说明
+│  └─ app.js
 └─ README.md
 ```
 
