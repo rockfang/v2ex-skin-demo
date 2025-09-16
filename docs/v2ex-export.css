@@ -100,7 +100,7 @@ a.count_livid:link,a.count_livid:visited{background:var(--accent);color:#fff!imp
 
 /* 交互与动效 */
 .cell{transition:background .22s cubic-bezier(.22,.61,.36,1),box-shadow .22s cubic-bezier(.22,.61,.36,1),transform .22s cubic-bezier(.22,.61,.36,1)}
-.cell:hover{background:var(--bg-elev);box-shadow:0 10px 26px rgba(17,20,22,.08);transform:translateY(-1px)}
+.cell:hover:not(.page-content-header){background:var(--bg-elev);box-shadow:0 10px 26px rgba(17,20,22,.08);transform:translateY(-1px)}
 .normal.button,.super.button,input.normal.button,button.normal.button{
   transition:transform .22s cubic-bezier(.22,.61,.36,1),box-shadow .22s cubic-bezier(.22,.61,.36,1)
 }
