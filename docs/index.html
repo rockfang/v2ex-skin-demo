@@ -33,7 +33,9 @@
     input[type="range"]{width:100%}
     select, textarea{border:1px solid var(--panel-line);border-radius:10px;padding:8px;background:#fff}
     button{padding:8px 12px;border-radius:10px;border:1px solid var(--panel-line);background:#fafafa;cursor:pointer}
-    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .actions{display:flex;gap:12px;flex-wrap:nowrap;margin-top:8px;align-items:center}
+    .link-btn{display:inline-flex;align-items:center;padding:8px 0;border:none;background:none;color:#2563eb;font-size:13px;font-weight:600;text-decoration:underline;white-space:nowrap}
+    .link-btn:hover{color:#1d4ed8}
     textarea{width:100%;height:180px;border-radius:12px;resize:vertical} /* 只纵向拉伸 */
     .divider{height:1px;background:var(--panel-line);margin:10px 0}
 
@@ -100,6 +102,7 @@
       <div class="actions">
         <button id="copyCss" class="btn-primary">复制完整 CSS</button>
         <button id="reset">重置</button>
+        <a class="link-btn" href="https://www.v2ex.com/settings" target="_blank" rel="noopener" aria-label="前往 V2EX 设置">&gt; V2EX 设置页</a>
       </div>
 
       <div class="divider"></div>
