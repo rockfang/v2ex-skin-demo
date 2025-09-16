@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>V 站 Glass 主题定制</title>
+  <!-- 预览专用样式（不参与导出） -->
+  <link rel="stylesheet" href="./app-base.css">
+  <style>
+    :root{--panel-bg:#fff;--panel-line:rgba(0,0,0,.08);--gap:24px}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:ui-sans-serif,system-ui,-apple-system,"SF Pro Text",Segoe UI,Roboto,Helvetica,Arial;
+      display:grid;grid-template-rows:1fr auto; /* 内容 + 吸底 footer */
+      min-height:100vh;background:#f7f8fb;box-sizing:border-box
+    }
+    .content{display:grid;grid-template-columns:320px 1fr;gap:var(--gap);padding:20px;box-sizing:border-box}
+
+    /* 左侧设置面板 */
+    .panel{border:1px solid var(--panel-line);border-radius:12px;padding:16px;background:var(--panel-bg)}
+    .panel h2{margin:2px 0 8px}
+    .row{display:flex;gap:8px;align-items:center;margin:10px 0}
+    .row.first{justify-content:space-between}
+    .theme-inline{display:flex;align-items:center;gap:8px}
+    label{color:#475569;font-size:13px}
+    .label-compact{width:auto;margin-right:6px}
+    input[type="range"]{width:100%}
+    select, textarea{border:1px solid var(--panel-line);border-radius:10px;padding:8px;background:#fff}
+    button{padding:8px 12px;border-radius:10px;border:1px solid var(--panel-line);background:#fafafa;cursor:pointer}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    textarea{width:100%;height:220px;border-radius:12px;resize:vertical} /* 只纵向拉伸 */
+    .divider{height:1px;background:var(--panel-line);margin:10px 0}
+
+    /* 主按钮（固定高亮，不随主题） */
+    .btn-primary{background:#2563eb;color:#fff;border:1px solid #1e40af;border-radius:8px;padding:8px 14px;font-weight:500}
+    .btn-primary:hover{background:#1d4ed8}
+    .btn-primary:active{background:#1e40af}
+    .btn-primary:disabled{background:#93c5fd;border-color:#93c5fd;cursor:not-allowed}
+
+    /* 使用方式 */
+    .help{font-size:16px;line-height:1.65;color:#475569;background:#f3f5f8;border:1px dashed #d9dee7;border-radius:10px;padding:10px}
+    .help b{font-weight:600}
+
+    /* 导出区：textarea 悬停显示右上角按钮 */
+    .export-wrap{position:relative}
+    .export-wrap .btn-compact{
+      position:absolute;top:8px;right:8px;padding:6px 10px;font-size:12px;border-radius:6px;display:none;z-index:1
+    }
+    .export-wrap:hover .btn-compact{display:inline-block}
+
+    /* 右侧预览框 */
+    .preview{border:1px solid rgba(0,0,0,.08);border-radius:12px;overflow:hidden;background:#fff}
+    .preview-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);background:var(--bg-elev)}
+    .preview-title{font-weight:600;color:var(--text-1)}
+    .preview-sub{font-size:12px;color:#e11d48;font-weight:600}
+
+    /* 吸底页脚 */
+    footer{text-align:center;padding:12px 0;font-size:12px;color:#94a3b8}
+  </style>
+</head>
+<body>
+  <div class="content">
+    <!-- 左侧设置 -->
+    <aside class="panel">
+      <h2>V 站 Glass 主题定制</h2>
+
+      <div class="row first">
+        <div class="theme-inline">
+          <label class="label-compact">选择主题</label>
+          <select id="preset">
+            <option value="denim">深牛仔蓝</option>
+            <option value="pine">松针绿</option>
+            <option value="amber">琥珀金</option>
+            <option value="rust" selected>铁锈橙红</option>
+            <option value="slate">石板蓝灰</option>
+            <option value="seafoam">海沫青绿</option>
+            <option value="custom">自定义</option>
+          </select>
+        </div>
+        <div class="theme-inline">
+          <label class="label-compact">Dark 模式</label>
+          <input id="night" type="checkbox">
+        </div>
+      </div>
+
+      <div class="row"><label style="width:92px">Hue</label><input id="hue" type="range" min="0" max="360" value="18"><span id="huev">18</span></div>
+      <div class="row"><label style="width:92px">Sat</label><input id="sat" type="range" min="0" max="100" value="66"><span id="satv">66%</span></div>
+      <div class="row"><label style="width:92px">Light</label><input id="lit" type="range" min="0" max="100" value="50"><span id="litv">50%</span></div>
+
+      <div class="actions">
+        <button id="copyCss" class="btn-primary">复制完整 CSS</button>
+        <button id="reset">重置</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <h3>使用方式</h3>
+      <div class="help">
+        1 在左侧选择预设主题，或拖动 Hue / Sat / Light 自定义；如需夜间预览，勾选 <b>Dark 模式</b>。<br>
+        2 右侧同步显示主题效果（仅为 V 站部分组件的简化还原）。<br>
+        3 满意后点击 <b>复制完整 CSS</b>，到 V2EX 设置 → <b>自定义 CSS</b> 中粘贴即可生效。
+      </div>
+
+      <div class="divider"></div>
+      <h3>导出内容（完整 CSS）</h3>
+      <div class="export-wrap">
+        <button id="copyCssFloat" class="btn-primary btn-compact" type="button">复制</button>
+        <textarea id="snippet" readonly></textarea>
+      </div>
+    </aside>
+
+    <!-- 右侧预览 -->
+    <main class="preview" id="preview">
+      <div class="preview-head">
+        <div class="preview-title" id="titleCN">主题效果预览：铁锈橙红</div>
+        <div class="preview-sub">这里只是简化还原 V 站部分组件，真实效果请在 V 站替换 CSS 查看</div>
+      </div>
+
+      <!-- 顶部导航（含搜索） -->
+      <div id="Top">
+        <div class="nav">
+          <div class="nav-left">
+            <div class="brand">V2EX</div>
+            <a href="javascript:;" class="nav-item active">技术</a>
+            <a href="javascript:;" class="nav-item">创意</a>
+            <a href="javascript:;" class="nav-item">好玩</a>
+            <a href="javascript:;" class="nav-item">Apple</a>
+            <a href="javascript:;" class="nav-item">程序员</a>
+            <a href="javascript:;" class="nav-item">交易</a>
+          </div>
+          <div class="nav-right">
+            <div class="search">
+              <input type="search" placeholder="搜索…" aria-label="搜索"><kbd>/</kbd>
+            </div>
+            <a href="javascript:;" class="nav-item">设置</a>
+            <a href="javascript:;" class="nav-item">登录</a>
+          </div>
+        </div>
+      </div>
+
+      <div id="Wrapper">
+        <div class="layout">
+          <!-- 左列 -->
+          <div class="main">
+            <!-- 帖子列表效果 -->
+            <div class="sec">
+              <div class="sec-title">帖子列表效果</div>
+
+              <div class="cell topic_cardItem hoverable">
+                <div class="row1">
+                  <img class="cover" src="https://placehold.co/36x36" alt="">
+                  <a class="topic_title" href="javascript:;">颠覆传统：开始“接触英语”！给浏览器装一个英语环境生成器</a>
+                  <span class="replies badge">482</span>
+                </div>
+                <div class="row2 meta">
+                  <a class="node" href="javascript:;">分享创造</a>
+                  <span class="dot">•</span><a class="author" href="javascript:;">OrionRies</a>
+                  <span class="dot">•</span><span class="time">8 分钟前</span>
+                  <span class="pro">PRO</span>
+                </div>
+              </div>
+
+              <div class="cell topic_cardItem hoverable">
+                <div class="row1">
+                  <img class="cover" src="https://placehold.co/36x36" alt="">
+                  <a class="topic_title" href="javascript:;">BotGem 已经适配最新版 macOS 26</a>
+                  <span class="replies badge">1</span>
+                </div>
+                <div class="row2 meta">
+                  <a class="node" href="javascript:;">分享创造</a>
+                  <span class="dot">•</span><a class="author" href="javascript:;">gaodeng</a>
+                  <span class="dot">•</span><span class="time">17 分钟前</span>
+                  <span class="last">最后回复来自 JJYing</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 普通卡片 -->
+            <div class="sec">
+              <div class="sec-title">普通卡片</div>
+              <div class="box">
+                <div class="card-title">这是一张普通信息卡片</div>
+                <p class="card-desc">展示一般内容块与段落文本，观察卡片背景、边框与文本颜色在不同主题下的对比度。</p>
+                <a href="javascript:;" class="link-more">了解更多 →</a>
+              </div>
+            </div>
+
+            <!-- 回复卡片 -->
+            <div class="sec">
+              <div class="sec-title">回复卡片</div>
+              <div class="cell reply">
+                <img class="avatar" src="https://placehold.co/32x32" alt="">
+                <div class="reply_body">
+                  <div class="reply_meta">
+                    <a class="author" href="javascript:;">zer0</a>
+                    <span class="time">刚刚</span>
+                  </div>
+                  <div class="reply_content">卡片 hover 的阴影和提升高度很像 v 站新版 👍</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右列：组件展示（更好的排版） -->
+          <aside class="side">
+            <div class="sec">
+              <div class="sec-title">组件展示</div>
+              <div class="box">
+                <div class="comp-grid">
+                  <div class="comp-item">
+                    <div class="comp-label">按钮</div>
+                    <div class="btn-group">
+                      <button class="normal button">普通按钮</button>
+                      <button class="super button">强调按钮</button>
+                    </div>
+                  </div>
+
+                  <div class="comp-item">
+                    <div class="comp-label">开关灯</div>
+                    <div class="switch-group">
+                      <span class="switch on" aria-label="on" title="开启"></span>
+                      <span class="switch" aria-label="off" title="关闭"></span>
+                    </div>
+                  </div>
+
+                  <div class="comp-item">
+                    <div class="comp-label">徽章/计数</div>
+                    <div class="badge-group">
+                      <a class="count_livid" href="javascript:;">23</a>
+                      <span class="badge">482</span>
+                    </div>
+                  </div>
+                </div> <!-- /comp-grid -->
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <footer>icaifun @2025</footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>
