@@ -117,6 +117,13 @@
       body:has(#Wrapper.Night) .panel .label, 
       body:has(#Wrapper.Night) .panel label{color:#c6d0da}
       body:has(#Wrapper.Night) .chip{background:#0000;color:#e5e7eb;border-color:#1f2937}
+      /* Night 模式下，高亮 hover 与选中态 */
+      body:has(#Wrapper.Night) .chip:hover{border-color:var(--accent,#2563eb);color:var(--accent,#2563eb)}
+      body:has(#Wrapper.Night) .chip.active{
+        border-color:var(--accent,#2563eb);
+        color:#fff;
+        background:color-mix(in oklab, var(--accent,#2563eb) 55%, #000);
+      }
       body:has(#Wrapper.Night) .link-btn{color:#93c5fd}
       body:has(#Wrapper.Night) textarea{background:#0f1216;color:#e5e7eb;border-color:#1f2937}
       body:has(#Wrapper.Night) .btn-primary{background:color-mix(in oklab, var(--accent,#2563eb) 55%, #000);border-color:#334155}
@@ -129,6 +136,13 @@
       body:has(#Wrapper.Night) .group{background:#0f1216;border-color:#1f2937}
       body:has(#Wrapper.Night) .panel .label, body:has(#Wrapper.Night) .panel label{color:#c6d0da}
       body:has(#Wrapper.Night) .chip{background:#0000;color:#e5e7eb;border-color:#1f2937}
+      /* Night 模式下，高亮 hover 与选中态 */
+      body:has(#Wrapper.Night) .chip:hover{border-color:var(--accent,#2563eb);color:var(--accent,#2563eb)}
+      body:has(#Wrapper.Night) .chip.active{
+        border-color:var(--accent,#2563eb);
+        color:#fff;
+        background:color-mix(in oklab, var(--accent,#2563eb) 55%, #000);
+      }
       body:has(#Wrapper.Night) .link-btn{color:#93c5fd}
     }
   </style>

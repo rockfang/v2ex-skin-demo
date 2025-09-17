@@ -94,7 +94,7 @@ a.count_livid:link,a.count_livid:visited{background:var(--accent);color:#fff!imp
 .topic_content.markdown_body img,.reply_content img{max-width:100%;height:auto}
 
 /* 分页等 */
-.page_current{background:var(--accent);color:#fff;border-radius:8px;padding:.15em .5em}
+.page_current{background:var(--accent);color:#fff !important;border-radius:8px;padding:.15em .5em}
 .page_normal{border:1px solid var(--line);border-radius:8px;padding:.15em .5em}
 .outdated{color:var(--text-3)}
 
