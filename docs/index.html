@@ -16,11 +16,26 @@
       background:#f7f8fb;
       box-sizing:border-box
     }
-    .content{display:grid;grid-template-columns:320px 1fr;gap:var(--gap);padding:20px;box-sizing:border-box}
+    .content{display:grid;grid-template-columns:420px 1fr;gap:var(--gap);padding:12px 16px;box-sizing:border-box;height:calc(100vh - var(--topbar-h,56px));overflow:hidden}
+
+    /* 顶部栏 */
+    .topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#fff;border-bottom:1px solid rgba(0,0,0,.08)}
+    .topbar .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+    .top-actions{display:flex;align-items:center;gap:10px}
+    /* Switch 样式（对齐 demo2） */
+    /* 先屏蔽预览区 .switch 的 ::after 旋钮等通用样式在顶部栏的影响 */
+    .topbar .switch{position:relative;display:inline-block;width:46px;height:24px;cursor:pointer;vertical-align:middle;background:transparent;border:0}
+    .topbar .switch::after{display:none;content:none}
+    .topbar .switch input{display:none}
+    .topbar .slider{position:absolute;inset:0;background:#cbd5e1;border-radius:999px;transition:background .2s ease}
+    .topbar .slider:before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s ease}
+    .topbar .switch input:checked + .slider{background:var(--accent,#2563eb)}
+    .topbar .switch input:checked + .slider:before{transform:translateX(22px)}
+    .topbar .switch:focus-within .slider{outline:2px solid color-mix(in oklab, var(--accent,#2563eb) 45%, transparent); outline-offset:2px}
 
     /* 左侧设置面板 */
-    .panel{border:1px solid var(--panel-line);border-radius:12px;padding:16px;background:var(--panel-bg)}
-    .panel h2{margin:2px 0 8px}
+    .panel{border:1px solid var(--panel-line);border-radius:12px;padding:16px;background:#f3f5f8;height:100%;overflow:auto;box-sizing: border-box;}
+    .panel h2{margin:2px 0 8px;font-size:16px}
     .row{display:flex;gap:8px;align-items:center;margin:10px 0}
     .row.first{justify-content:space-between}
     .theme-inline{display:flex;align-items:center;gap:8px}
@@ -32,15 +47,29 @@
     }
     input[type="range"]{width:100%}
     select, textarea{border:1px solid var(--panel-line);border-radius:10px;padding:8px;background:#fff}
+    /* 预设主题为平铺标签 */
+    #preset{display:none}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .group .theme-inline{flex-direction:column;align-items:flex-start}
+    .chip{padding:6px 10px;border-radius:999px;border:1px solid var(--panel-line);background:#fff;color:#111416;cursor:pointer}
+    .chip.active,.chip:hover{border-color:var(--accent,#2563eb);color:var(--accent,#2563eb)}
+    /* 左侧卡片分组 */
+    .group{margin:14px 0;background:#fff;border:1px solid var(--panel-line);border-radius:12px;padding:12px}
+    .group .label{font-weight:600;margin-bottom:8px;color:#334155}
+    /* 隐藏旧的文案与分隔 */
+    .panel .label-compact{display:none}
+    .panel .divider,.panel h4,.panel .help{display:none}
+    /* 隐藏预设主题内的第二列（Dark 文案） */
+    .group > .theme-inline + .theme-inline{display:none}
     button{padding:8px 12px;border-radius:10px;border:1px solid var(--panel-line);background:#fafafa;cursor:pointer}
-    .actions{display:flex;gap:12px;flex-wrap:nowrap;margin-top:8px;align-items:center}
-    .link-btn{display:inline-flex;align-items:center;padding:8px 0;border:none;background:none;color:#2563eb;font-size:13px;font-weight:600;text-decoration:underline;white-space:nowrap}
-    .link-btn:hover{color:#1d4ed8}
-    textarea{width:100%;height:180px;border-radius:12px;resize:vertical} /* 只纵向拉伸 */
+    .actions{display:flex;gap:12px;flex-wrap:nowrap;margin-top:8px;align-items:center;justify-content: space-between;}
+    .link-btn{display:inline-flex;align-items:center;padding:8px 0;border:none;background:none;color:#555;font-size:13px;font-weight:600;text-decoration:underline;white-space:nowrap}
+    .link-btn:hover{color:#333344}
+    textarea{width:100%;height:280px;border-radius:12px;resize:vertical;margin-right: 10px;} /* 只纵向拉伸 */
     .divider{height:1px;background:var(--panel-line);margin:10px 0}
 
     /* 主按钮（固定高亮，不随主题） */
-    .btn-primary{background:#2563eb;color:#fff;border:1px solid #1e40af;border-radius:8px;padding:8px 14px;font-weight:500}
+    .btn-primary{background:var(--accent,#2563eb);color:#fff;border:1px solid color-mix(in oklab, var(--accent,#2563eb) 60%, #000 40%);border-radius:8px;padding:8px 14px;font-weight:500}
     .btn-primary:hover{background:#1d4ed8}
     .btn-primary:active{background:#1e40af}
     .btn-primary:disabled{background:#93c5fd;border-color:#93c5fd;cursor:not-allowed}
@@ -60,25 +89,86 @@
     .export-wrap:hover .btn-compact{display:inline-block}
 
     /* 右侧预览框 */
-    .preview{border:1px solid rgba(0,0,0,.08);border-radius:12px;overflow:hidden;background:#fff}
-    .preview-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);background:var(--bg-elev)}
-    .preview-title{font-weight:600;color:var(--text-1)}
-    .preview-sub{font-size:12px;color:#e11d48;font-weight:600}
-    .preview-info{display:flex;flex-direction:column;gap:4px}
+    .preview{border:1px solid rgba(0,0,0,.08);border-radius:12px;overflow:hidden;background:#fff;height:100%}
+    .preview-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--bg-elev)}
+    .preview-title{display:none}
+    /* 预览区只读徽标，随主题变化 */
+    .preview-sub{font-size:12px;font-weight:600;padding:3px 8px;border-radius:999px;display:inline-block;
+      border:1px solid color-mix(in oklab, var(--accent,#2563eb) 30%, var(--line));
+      background:color-mix(in oklab, var(--accent,#2563eb) 16%, transparent);
+      color:var(--text-1);
+    }
+    .preview-info{display:flex;flex-direction:row;align-items:center;gap:10px}
+    .preview-hint{font-size:12px;color:var(--text-3)}
     .repo-link{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;color:var(--text-2,#475569);text-decoration:none;border:1px solid rgba(148,163,184,.4);transition:color .2s ease,background .2s ease,border-color .2s ease}
     .repo-link:hover{color:#1f2937;border-color:#94a3b8;background:rgba(148,163,184,.12)}
     .repo-link svg{width:16px;height:16px;fill:currentColor}
+    /* 仅隐藏预览头部原有的 GitHub 图标，顶部栏保留 */
+    .preview-head > .repo-link{display:none}
+    
+    /* 夜间模式也作用于左侧面板与顶部栏 */
+    @supports selector(body:has(#Wrapper.Night)){
+      body:has(#Wrapper.Night){background:#0f1115}
+      body:has(#Wrapper.Night) .topbar{background:#0b0d10;border-bottom-color:#1f2937}
+      body:has(#Wrapper.Night) .topbar .brand{color:#e5e7eb}
+      body:has(#Wrapper.Night) .topbar .muted{color:#9aa3af !important}
+      body:has(#Wrapper.Night) .panel{background:#111317;border-color:#1f2937;color:#e5e7eb}
+      body:has(#Wrapper.Night) .group{background:#0f1216;border-color:#1f2937}
+      body:has(#Wrapper.Night) .panel .label, 
+      body:has(#Wrapper.Night) .panel label{color:#c6d0da}
+      body:has(#Wrapper.Night) .chip{background:#0000;color:#e5e7eb;border-color:#1f2937}
+      body:has(#Wrapper.Night) .link-btn{color:#93c5fd}
+      body:has(#Wrapper.Night) textarea{background:#0f1216;color:#e5e7eb;border-color:#1f2937}
+      body:has(#Wrapper.Night) .btn-primary{background:color-mix(in oklab, var(--accent,#2563eb) 55%, #000);border-color:#334155}
+      body:has(#Wrapper.Night) .btn-primary:hover{background:color-mix(in oklab, var(--accent,#2563eb) 65%, #000)}
+    }
+    /* 夜间模式也作用于左侧面板 */
+    @supports selector(body:has(#Wrapper.Night)){
+      body:has(#Wrapper.Night){background:#0f1115}
+      body:has(#Wrapper.Night) .panel{background:#111317;border-color:#1f2937;color:#e5e7eb}
+      body:has(#Wrapper.Night) .group{background:#0f1216;border-color:#1f2937}
+      body:has(#Wrapper.Night) .panel .label, body:has(#Wrapper.Night) .panel label{color:#c6d0da}
+      body:has(#Wrapper.Night) .chip{background:#0000;color:#e5e7eb;border-color:#1f2937}
+      body:has(#Wrapper.Night) .link-btn{color:#93c5fd}
+    }
   </style>
 </head>
 <body>
+  <!-- 顶部栏：标题 + Dark 开关 + GitHub -->
+  <header class="topbar">
+    <div class="brand">
+      <span>V 站 Glass 主题定制</span>
+      <span class="muted" style="font-weight:400;color:#64748b">配置在左 · 预览在右</span>
+    </div>
+    <div class="top-actions">
+      <span class="muted" style="color:#64748b">Dark</span>
+      <label class="switch" title="Dark 模式">
+        <input id="night" type="checkbox" />
+        <span class="slider"></span>
+      </label>
+      <a class="repo-link" href="https://github.com/rockfang/v2ex-skin-demo" target="_blank" rel="noopener" aria-label="访问 GitHub 仓库">
+        <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 .198a8 8 0 0 0-2.53 15.59c.4.074.547-.174.547-.386 0-.19-.007-.693-.01-1.36-2.226.483-2.695-1.073-2.695-1.073-.364-.924-.89-1.17-.89-1.17-.727-.497.055-.487.055-.487.804.057 1.227.826 1.227.826.714 1.223 1.873.87 2.329.665.072-.517.28-.87.508-1.07-1.777-.202-3.644-.888-3.644-3.955 0-.874.312-1.589.824-2.15-.083-.202-.357-1.017.078-2.12 0 0 .67-.215 2.195.82a7.64 7.64 0 0 1 2-.27 7.64 7.64 0 0 1 2 .27c1.524-1.035 2.193-.82 2.193-.82.437 1.103.163 1.918.08 2.12.513.561.823 1.276.823 2.15 0 3.075-1.87 3.75-3.652 3.95.288.25.544.739.544 1.49 0 1.075-.01 1.94-.01 2.204 0 .214.145.463.55.384A8 8 0 0 0 8 .198"/></svg>
+      </a>
+    </div>
+  </header>
   <div class="content">
     <!-- 左侧设置 -->
     <aside class="panel">
       <h2>V 站 Glass 主题定制</h2>
 
-      <div class="row first">
+      <div class="group">
         <div class="theme-inline">
+          <div class="label">预设主题</div>
           <label class="label-compact">选择主题</label>
+          <div class="chips" id="presetChips">
+            <button class="chip" data-preset="denim">深牛仔蓝</button>
+            <button class="chip" data-preset="pine">松针绿</button>
+            <button class="chip" data-preset="amber">琥珀色</button>
+            <button class="chip active" data-preset="rust">铁锈橙红</button>
+            <button class="chip" data-preset="slate">石板蓝灰</button>
+            <button class="chip" data-preset="seafoam">海沫青绿</button>
+            <button class="chip" data-preset="custom">自定义</button>
+          </div>
           <select id="preset">
             <option value="denim">深牛仔蓝</option>
             <option value="pine">松针绿</option>
@@ -91,18 +181,21 @@
         </div>
         <div class="theme-inline">
           <label class="label-compact">Dark 模式</label>
-          <input id="night" type="checkbox">
+          <input id="night_dummy" type="checkbox" style="display:none" disabled>
         </div>
       </div>
 
-      <div class="row"><label style="width:92px">Hue</label><input id="hue" type="range" min="0" max="360" value="18"><span id="huev">18</span></div>
+      <div class="group">
+        <div class="label">HSL 调节</div>
+        <div class="row"><label style="width:92px">Hue</label><input id="hue" type="range" min="0" max="360" value="18"><span id="huev">18</span></div>
       <div class="row"><label style="width:92px">Sat</label><input id="sat" type="range" min="0" max="100" value="66"><span id="satv">66%</span></div>
       <div class="row"><label style="width:92px">Light</label><input id="lit" type="range" min="0" max="100" value="50"><span id="litv">50%</span></div>
 
-      <div class="actions">
-        <button id="copyCss" class="btn-primary">复制完整 CSS</button>
-        <button id="reset">重置</button>
+        <div class="actions">
+        <button id="copyCss">复制 CSS</button>
+        <button id="reset" style="display:none" aria-hidden="true" tabindex="-1"></button>
         <a class="link-btn" href="https://www.v2ex.com/settings" target="_blank" rel="noopener" aria-label="前往 V2EX 设置">&gt; V2EX 设置页</a>
+        </div>
       </div>
 
       <div class="divider"></div>
@@ -119,9 +212,12 @@
 
       <div class="divider"></div>
       <h4>导出内容（完整 CSS）</h4>
-      <div class="export-wrap">
-        <button id="copyCssFloat" class="btn-primary btn-compact" type="button">复制完整 CSS</button>
+      <div class="group" style="padding-right: 20px;">
+        <div class="label">导出 CSS</div>
+        <div class="export-wrap">
+        <button id="copyCssFloat" class="btn-compact" type="button">复制 CSS</button>
         <textarea id="snippet" readonly></textarea>
+      </div>
       </div>
     </aside>
 
@@ -130,7 +226,8 @@
       <div class="preview-head">
         <div class="preview-info">
           <div class="preview-title" id="titleCN">主题效果预览：铁锈橙红</div>
-          <div class="preview-sub">这里只是简化还原 V 站部分组件，真实效果请在 V 站替换 CSS 查看</div>
+          <div class="preview-sub">预览区（只读）</div>
+          <div class="preview-hint">提示：此区域禁用交互，仅做视觉示意。真实效果请在 V 站替换 CSS 查看</div>
         </div>
         <a class="repo-link" href="https://github.com/rockfang/v2ex-skin-demo" target="_blank" rel="noopener" aria-label="访问 GitHub 仓库">
           <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 .198a8 8 0 0 0-2.53 15.59c.4.074.547-.174.547-.386 0-.19-.007-.693-.01-1.36-2.226.483-2.695-1.073-2.695-1.073-.364-.924-.89-1.17-.89-1.17-.727-.497.055-.487.055-.487.804.057 1.227.826 1.227.826.714 1.223 1.873.87 2.329.665.072-.517.28-.87.508-1.07-1.777-.202-3.644-.888-3.644-3.955 0-.874.312-1.589.824-2.15-.083-.202-.357-1.017.078-2.12 0 0 .67-.215 2.195.82a7.64 7.64 0 0 1 2-.27 7.64 7.64 0 0 1 2 .27c1.524-1.035 2.193-.82 2.193-.82.437 1.103.163 1.918.08 2.12.513.561.823 1.276.823 2.15 0 3.075-1.87 3.75-3.652 3.95.288.25.544.739.544 1.49 0 1.075-.01 1.94-.01 2.204 0 .214.145.463.55.384A8 8 0 0 0 8 .198"/></svg>
@@ -175,8 +272,8 @@
                 </div>
                 <div class="row2 meta">
                   <a class="node" href="javascript:;">分享创造</a>
-                  <span class="dot">•</span><a class="author" href="javascript:;">OrionRies</a>
-                  <span class="dot">•</span><span class="time">8 分钟前</span>
+                  <span class="dot">?</span><a class="author" href="javascript:;">OrionRies</a>
+                  <span class="dot">?</span><span class="time">8 分钟前</span>
                   <span class="pro">PRO</span>
                 </div>
               </div>
@@ -189,8 +286,8 @@
                 </div>
                 <div class="row2 meta">
                   <a class="node" href="javascript:;">分享创造</a>
-                  <span class="dot">•</span><a class="author" href="javascript:;">gaodeng</a>
-                  <span class="dot">•</span><span class="time">17 分钟前</span>
+                  <span class="dot">?</span><a class="author" href="javascript:;">gaodeng</a>
+                  <span class="dot">?</span><span class="time">17 分钟前</span>
                   <span class="last">最后回复来自 JJYing</span>
                 </div>
               </div>
@@ -216,7 +313,7 @@
                     <a class="author" href="javascript:;">zer0</a>
                     <span class="time">刚刚</span>
                   </div>
-                  <div class="reply_content">卡片 hover 的阴影和提升高度很像 v 站新版 👍</div>
+                  <div class="reply_content">卡片 hover 的阴影和提升高度很像 v 站新版 ??</div>
                 </div>
               </div>
             </div>
@@ -258,9 +355,98 @@
         </div>
       </div>
     </main>
-  </div><script src="./app.js"></script>
+  </div>
+  <script src="./app.js"></script>
+  <script>
+    // 让 chips 驱动隐藏的 select，从而复用现有 app.js 逻辑
+    (function(){
+      const chips = document.getElementById('presetChips');
+      const sel = document.getElementById('preset');
+      const sub = document.querySelector('.preview-sub');
+      const panelTitle = document.querySelector('.panel h2');
+      if(sub){ sub.textContent = '\u9884\u89C8\u533A\uff08\u53EA\u8BFB\uff09'; }
+      if(panelTitle){ panelTitle.textContent = '\u914D\u7F6E\u9762\u677F'; }
+
+      // 修正可能的中文乱码：统一用 Unicode 转义设置关键可见文案
+      // 顶部品牌与副标题
+      const brand = document.querySelector('.topbar .brand span:first-child');
+      const brandSub = document.querySelector('.topbar .brand span.muted');
+      if(brand) brand.textContent = '\u0056\u0020\u7AD9\u0020Glass\u0020\u4E3B\u9898\u5B9A\u5236'; // V 站 Glass 主题定制
+      if(brandSub) brandSub.textContent = '\u914D\u7F6E\u5728\u5DE6\u00B7\u9884\u89C8\u5728\u53F3';
+
+      // 左侧各分组标题
+      const groups = document.querySelectorAll('.panel .group .label');
+      if(groups[0]) groups[0].textContent = '\u9884\u8BBE\u4E3B\u9898'; // 预设主题
+      if(groups[1]) groups[1].textContent = 'HSL \u8C03\u8282';
+      if(groups[2]) groups[2].textContent = '\u5BFC\u51FA\u0020CSS';
+
+      // 预设 chips 文案
+      const CHIP_TEXT = {
+        denim: '\u6DF1\u725B\u4ED4\u84DD',
+        pine: '\u677E\u9488\u7EFF',
+        amber: '\u743C\u73C0\u8272',
+        rust: '\u94C1\u9508\u6A59\u7EA2',
+        slate: '\u77F3\u677F\u84DD\u7070',
+        seafoam: '\u6D77\u6CAB\u9752\u7EFF',
+        custom: '\u81EA\u5B9A\u4E49'
+      };
+      document.querySelectorAll('#presetChips .chip').forEach(chip => {
+        const k = chip.getAttribute('data-preset');
+        if(CHIP_TEXT[k]) chip.textContent = CHIP_TEXT[k];
+      });
+
+      // 隐藏 select 的可见文本也修正（虽然默认隐藏）
+      document.querySelectorAll('#preset option').forEach(opt => {
+        const k = opt.value; if(CHIP_TEXT[k] && k !== 'custom') opt.textContent = CHIP_TEXT[k];
+        if(k==='custom') opt.textContent = CHIP_TEXT.custom;
+      });
+
+      // 操作区按钮与链接
+      const btnCopy = document.getElementById('copyCss');
+      const btnCopyFloat = document.getElementById('copyCssFloat');
+      const linkSettings = document.querySelector('.link-btn[href*="v2ex.com/settings"]');
+      if(btnCopy) btnCopy.textContent = '\u590D\u5236\u0020CSS';
+      if(btnCopyFloat) btnCopyFloat.textContent = '\u590D\u5236\u0020CSS';
+      if(linkSettings){
+        linkSettings.textContent = '\u003E\u0020V2EX\u0020\u8BBE\u7F6E\u9875';
+        linkSettings.setAttribute('aria-label','\u524D\u5F80\u0020V2EX\u0020\u8BBE\u7F6E');
+      }
+
+      // 使内容高度与顶部栏自适应，避免底部不齐
+      const header = document.querySelector('.topbar');
+      function setTopbarVar(){
+        const h = header ? header.offsetHeight : 56;
+        document.documentElement.style.setProperty('--topbar-h', h + 'px');
+      }
+      setTopbarVar();
+      window.addEventListener('resize', setTopbarVar);
+      if(!chips || !sel) return;
+      function setActive(val){
+        chips.querySelectorAll('.chip').forEach(c=>{
+          c.classList.toggle('active', c.getAttribute('data-preset')===val);
+        });
+      }
+      chips.addEventListener('click', function(e){
+        const btn = e.target.closest('.chip');
+        if(!btn) return;
+        const val = btn.getAttribute('data-preset');
+        if(!val) return;
+        sel.value = val;
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+        setActive(val);
+      });
+      sel.addEventListener('change', function(){ setActive(sel.value); });
+      // 当手动拖动 H/S/L 滑块时，app.js 会把 select 设为匹配预设或 custom
+      // 这里在同一 input 事件后刷新 chips 的激活态，确保切到“自定义”标签
+      ['hue','sat','lit'].forEach(function(id){
+        var el = document.getElementById(id);
+        if(el){ el.addEventListener('input', function(){ setActive(sel.value); }); }
+      });
+    })();
+  </script>
 </body>
 </html>
+
 
 
 
