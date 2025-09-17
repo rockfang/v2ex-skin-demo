@@ -118,3 +118,7 @@ a.count_livid:link,a.count_livid:visited{background:var(--accent);color:#fff!imp
 
 /* 默认占位（Denim）。导出时末尾覆盖为当前变量 */
 :root{--accent-hue:210;--accent-sat:65%;--accent-lit:52%}
+/* 处理暗黑模式下默认的背景图片太亮问题。直接去除图片背景 */
+#Wrapper.Night{background-image:none!important}
+/* 去掉暗黑模式下box下边框*/
+#Wrapper.Night .box{border-bottom:none!important}
