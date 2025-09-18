@@ -53,9 +53,30 @@
     .group .theme-inline{flex-direction:column;align-items:flex-start}
     .chip{padding:6px 10px;border-radius:999px;border:1px solid var(--panel-line);background:#fff;color:#111416;cursor:pointer}
     .chip.active,.chip:hover{border-color:var(--accent,#2563eb);color:var(--accent,#2563eb)}
+    /* 我的主题：删除按钮与管理模式 */
+    #userChips .chip{position:relative}
+    #userChips .chip .close{
+      position:absolute;top:-8px;right:-8px;width:20px;height:20px;line-height:18px;
+      border:1px solid rgba(0,0,0,.12);border-radius:999px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+      background:#fff;color:#64748b;font-weight:700;font-size:12px;
+      cursor:pointer;opacity:0;transition:opacity .15s ease, background .15s ease, color .15s ease, border-color .15s ease;
+      padding:0;text-align:center
+    }
+    #userChips .chip .close:hover{background:#ef4444;border-color:#ef4444;color:#fff}
+    #userChips .chip .close:focus-visible{outline:2px solid #ef4444;outline-offset:2px}
+    /* 仅在悬浮时显示删除按钮 */
+    #userChips .chip:hover .close{opacity:1}
+    /* 夜间模式下的对比与阴影（不跟随 accent） */
+    @supports selector(body:has(#Wrapper.Night)){
+      body:has(#Wrapper.Night) #userChips .chip .close{
+        background:#0f1115;color:#94a3b8;border-color:#334155;box-shadow:0 1px 2px rgba(0,0,0,.6)
+      }
+      body:has(#Wrapper.Night) #userChips .chip .close:hover{background:#ef4444;border-color:#ef4444;color:#fff}
+    }
     /* 左侧卡片分组 */
     .group{margin:14px 0;background:#fff;border:1px solid var(--panel-line);border-radius:12px;padding:12px}
     .group .label{font-weight:600;margin-bottom:8px;color:#334155}
+    .group .label .hint{font-weight:400;font-size:12px;color:#64748b;margin-left:8px}
     /* 隐藏旧的文案与分隔 */
     .panel .label-compact{display:none}
     .panel .divider,.panel h4,.panel .help{display:none}
@@ -116,6 +137,7 @@
       body:has(#Wrapper.Night) .group{background:#0f1216;border-color:#1f2937}
       body:has(#Wrapper.Night) .panel .label, 
       body:has(#Wrapper.Night) .panel label{color:#c6d0da}
+      body:has(#Wrapper.Night) .group .label .hint{color:#94a3b8}
       body:has(#Wrapper.Night) .chip{background:#0000;color:#e5e7eb;border-color:#1f2937}
       /* Night 模式下，高亮 hover 与选中态 */
       body:has(#Wrapper.Night) .chip:hover{border-color:var(--accent,#2563eb);color:var(--accent,#2563eb)}
@@ -172,16 +194,19 @@
 
       <div class="group">
         <div class="theme-inline">
-          <div class="label">预设主题</div>
+          <div class="label">平台预设主题</div>
           <label class="label-compact">选择主题</label>
           <div class="chips" id="presetChips">
+            <button class="chip" data-preset="rust">铁锈橙红</button>
             <button class="chip" data-preset="denim">深牛仔蓝</button>
             <button class="chip" data-preset="pine">松针绿</button>
             <button class="chip" data-preset="amber">琥珀色</button>
-            <button class="chip active" data-preset="rust">铁锈橙红</button>
             <button class="chip" data-preset="slate">石板蓝灰</button>
             <button class="chip" data-preset="seafoam">海沫青绿</button>
-            <button class="chip" data-preset="custom">自定义</button>
+          </div>
+          <div class="theme-inline" id="userThemesBlock" style="margin-top:8px;align-items:flex-start;display:none">
+            <div class="label">我的主题</div>
+            <div class="chips" id="userChips"></div>
           </div>
           <select id="preset">
             <option value="denim">深牛仔蓝</option>
@@ -200,13 +225,14 @@
       </div>
 
       <div class="group">
-        <div class="label">HSL 调节</div>
+        <div class="label">主题定制 <span class="hint">可拖动下方滑块调整主题颜色</span></div>
         <div class="row"><label style="width:92px">Hue</label><input id="hue" type="range" min="0" max="360" value="18"><span id="huev">18</span></div>
       <div class="row"><label style="width:92px">Sat</label><input id="sat" type="range" min="0" max="100" value="66"><span id="satv">66%</span></div>
       <div class="row"><label style="width:92px">Light</label><input id="lit" type="range" min="0" max="100" value="50"><span id="litv">50%</span></div>
 
         <div class="actions">
         <button id="copyCss">复制 CSS</button>
+        <button id="saveTheme" type="button" title="保存到本地" style="display:none">保存到我的主题</button>
         <button id="reset" style="display:none" aria-hidden="true" tabindex="-1"></button>
         <a class="link-btn" href="https://www.v2ex.com/settings" target="_blank" rel="noopener" aria-label="前往 V2EX 设置">&gt; V2EX 设置页</a>
         </div>
@@ -376,55 +402,8 @@
     (function(){
       const chips = document.getElementById('presetChips');
       const sel = document.getElementById('preset');
-      const sub = document.querySelector('.preview-sub');
-      const panelTitle = document.querySelector('.panel h2');
-      if(sub){ sub.textContent = '\u9884\u89C8\u533A\uff08\u53EA\u8BFB\uff09'; }
-      if(panelTitle){ panelTitle.textContent = '\u914D\u7F6E\u9762\u677F'; }
-
-      // 修正可能的中文乱码：统一用 Unicode 转义设置关键可见文案
-      // 顶部品牌与副标题
-      const brand = document.querySelector('.topbar .brand span:first-child');
-      const brandSub = document.querySelector('.topbar .brand span.muted');
-      if(brand) brand.textContent = '\u0056\u0020\u7AD9\u0020Glass\u0020\u4E3B\u9898\u5B9A\u5236'; // V 站 Glass 主题定制
-      if(brandSub) brandSub.textContent = '\u914D\u7F6E\u5728\u5DE6\u00B7\u9884\u89C8\u5728\u53F3';
-
-      // 左侧各分组标题
-      const groups = document.querySelectorAll('.panel .group .label');
-      if(groups[0]) groups[0].textContent = '\u9884\u8BBE\u4E3B\u9898'; // 预设主题
-      if(groups[1]) groups[1].textContent = 'HSL \u8C03\u8282';
-      if(groups[2]) groups[2].textContent = '\u5BFC\u51FA\u0020CSS';
-
-      // 预设 chips 文案
-      const CHIP_TEXT = {
-        denim: '\u6DF1\u725B\u4ED4\u84DD',
-        pine: '\u677E\u9488\u7EFF',
-        amber: '\u743C\u73C0\u8272',
-        rust: '\u94C1\u9508\u6A59\u7EA2',
-        slate: '\u77F3\u677F\u84DD\u7070',
-        seafoam: '\u6D77\u6CAB\u9752\u7EFF',
-        custom: '\u81EA\u5B9A\u4E49'
-      };
-      document.querySelectorAll('#presetChips .chip').forEach(chip => {
-        const k = chip.getAttribute('data-preset');
-        if(CHIP_TEXT[k]) chip.textContent = CHIP_TEXT[k];
-      });
-
-      // 隐藏 select 的可见文本也修正（虽然默认隐藏）
-      document.querySelectorAll('#preset option').forEach(opt => {
-        const k = opt.value; if(CHIP_TEXT[k] && k !== 'custom') opt.textContent = CHIP_TEXT[k];
-        if(k==='custom') opt.textContent = CHIP_TEXT.custom;
-      });
-
-      // 操作区按钮与链接
-      const btnCopy = document.getElementById('copyCss');
-      const btnCopyFloat = document.getElementById('copyCssFloat');
-      const linkSettings = document.querySelector('.link-btn[href*="v2ex.com/settings"]');
-      if(btnCopy) btnCopy.textContent = '\u590D\u5236\u0020CSS';
-      if(btnCopyFloat) btnCopyFloat.textContent = '\u590D\u5236\u0020CSS';
-      if(linkSettings){
-        linkSettings.textContent = '\u003E\u0020V2EX\u0020\u8BBE\u7F6E\u9875';
-        linkSettings.setAttribute('aria-label','\u524D\u5F80\u0020V2EX\u0020\u8BBE\u7F6E');
-      }
+      const userChips = document.getElementById('userChips');
+      const userThemesBlock = document.getElementById('userThemesBlock');
 
       // 使内容高度与顶部栏自适应，避免底部不齐
       const header = document.querySelector('.topbar');
@@ -435,10 +414,54 @@
       setTopbarVar();
       window.addEventListener('resize', setTopbarVar);
       if(!chips || !sel) return;
-      function setActive(val){
-        chips.querySelectorAll('.chip').forEach(c=>{
-          c.classList.toggle('active', c.getAttribute('data-preset')===val);
+      function getSavedThemes(){
+        try{ return JSON.parse(localStorage.getItem('sg:savedThemes')||'[]'); }
+        catch(e){ return []; }
+      }
+      function saveThemes(list){
+        try{ localStorage.setItem('sg:savedThemes', JSON.stringify(list)); }
+        catch(e){}
+      }
+      function renderUserChips(){
+        if(!userChips) return;
+        const list = getSavedThemes();
+        userChips.innerHTML = '';
+        // 有保存才展示“我的主题”区
+        if(userThemesBlock){ userThemesBlock.style.display = list.length? '': 'none'; }
+        list.forEach(item => {
+          const btn = document.createElement('button');
+          btn.className = 'chip';
+          btn.setAttribute('data-user-theme', item.name);
+          btn.innerHTML = `<span class="name"></span><button class="close" type="button" data-action="del" aria-label="删除 ${item.name}" title="删除">×</button>`;
+          btn.querySelector('.name').textContent = item.name;
+          userChips.appendChild(btn);
         });
+      }
+      renderUserChips();
+      document.addEventListener('sg:savedThemesChanged', renderUserChips);
+      function refreshActive(){
+        const H = +document.getElementById('hue').value;
+        const S = +document.getElementById('sat').value;
+        const L = +document.getElementById('lit').value;
+        // 先匹配用户主题
+        let userName = null;
+        try{
+          const list = JSON.parse(localStorage.getItem('sg:savedThemes')||'[]');
+          const hit = Array.isArray(list) ? list.find(x=>+x.h===H && +x.s===S && +x.l===L) : null;
+          if(hit) userName = hit.name;
+        }catch(e){}
+        // 再从 select 读取预设匹配（app.js 已维护好）
+        const presetKey = (sel.value && sel.value !== 'custom') ? sel.value : null;
+        // 优先高亮用户主题
+        chips.querySelectorAll('.chip').forEach(c=>{
+          const key = c.getAttribute('data-preset');
+          c.classList.toggle('active', !userName && presetKey && key===presetKey);
+        });
+        if(userChips){
+          userChips.querySelectorAll('.chip').forEach(c=>{
+            c.classList.toggle('active', !!userName && c.getAttribute('data-user-theme')===userName);
+          });
+        }
       }
       chips.addEventListener('click', function(e){
         const btn = e.target.closest('.chip');
@@ -447,15 +470,58 @@
         if(!val) return;
         sel.value = val;
         sel.dispatchEvent(new Event('change', { bubbles: true }));
-        setActive(val);
+        window.__sgActiveUserThemeName = null;
+        refreshActive();
       });
-      sel.addEventListener('change', function(){ setActive(sel.value); });
+      // 用户主题点击：直接设置 HSL 滑块并触发 input，让 app.js 接管
+      userChips?.addEventListener('click', function(e){
+        const delBtn = e.target.closest('[data-action="del"]');
+        if(delBtn){
+          const chip = delBtn.closest('.chip');
+          if(!chip) return;
+          const name = chip.getAttribute('data-user-theme');
+          let list = getSavedThemes();
+          list = list.filter(x=>x.name!==name);
+          saveThemes(list);
+          if(window.__sgActiveUserThemeName===name){ window.__sgActiveUserThemeName=null; }
+          document.dispatchEvent(new CustomEvent('sg:savedThemesChanged'));
+          // 刷新激活态
+          setActive(sel.value);
+          e.stopPropagation();
+          e.preventDefault();
+          return;
+        }
+        const btn = e.target.closest('.chip');
+        if(!btn) return;
+        const name = btn.getAttribute('data-user-theme');
+        const list = getSavedThemes();
+        const item = list.find(x=>x.name===name);
+        if(!item) return;
+        const H = document.getElementById('hue');
+        const S = document.getElementById('sat');
+        const L = document.getElementById('lit');
+        if(!H||!S||!L) return;
+        window.__sgActiveUserThemeName = name;
+        window.__sgApplyingUserTheme = true;
+        H.value = item.h; S.value = item.s; L.value = item.l;
+        H.dispatchEvent(new Event('input',{bubbles:true}));
+        S.dispatchEvent(new Event('input',{bubbles:true}));
+        L.dispatchEvent(new Event('input',{bubbles:true}));
+        // 微任务后清理标记，确保 applyVars 完整运行
+        setTimeout(()=>{ window.__sgApplyingUserTheme = false; },0);
+        sel.value = 'custom';
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+        refreshActive();
+      });
+      sel.addEventListener('change', function(){ refreshActive(); });
       // 当手动拖动 H/S/L 滑块时，app.js 会把 select 设为匹配预设或 custom
-      // 这里在同一 input 事件后刷新 chips 的激活态，确保切到“自定义”标签
+      // 这里在同一 input 事件后刷新 chips 的激活态，根据匹配结果高亮或不高亮
       ['hue','sat','lit'].forEach(function(id){
         var el = document.getElementById(id);
-        if(el){ el.addEventListener('input', function(){ setActive(sel.value); }); }
+        if(el){ el.addEventListener('input', function(){ window.__sgActiveUserThemeName=null; refreshActive(); }); }
       });
+      // 首次加载时，同步一次 chips 激活态
+      refreshActive();
     })();
   </script>
 </body>
