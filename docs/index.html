@@ -438,7 +438,10 @@
         });
       }
       renderUserChips();
-      document.addEventListener('sg:savedThemesChanged', renderUserChips);
+      document.addEventListener('sg:savedThemesChanged', function(){
+        renderUserChips();
+        try{ refreshActive(); }catch(e){}
+      });
       function refreshActive(){
         const H = +document.getElementById('hue').value;
         const S = +document.getElementById('sat').value;
@@ -485,8 +488,7 @@
           saveThemes(list);
           if(window.__sgActiveUserThemeName===name){ window.__sgActiveUserThemeName=null; }
           document.dispatchEvent(new CustomEvent('sg:savedThemesChanged'));
-          // 刷新激活态
-          setActive(sel.value);
+          refreshActive();
           e.stopPropagation();
           e.preventDefault();
           return;
