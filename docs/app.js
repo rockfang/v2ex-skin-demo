@@ -43,15 +43,43 @@
       .trim();
   }
 
-  // 读取导出底稿 + 变量片段，写入 textarea
+// 读取导出底稿 + 变量片段，写入 textarea（带头部署名注释） 
   function updateSnippet(){
     const h = hue.value, s = sat.value, l = lit.value;
     const vars = `:root{--accent-hue:${h};--accent-sat:${s}%;--accent-lit:${l}%}`;
+    // 使用 /*! ... */ 以提高在压缩后的保留概率
+    const header = `/*!
+ * ⚡ V2EX 主题定制工具
+ * https://rockfang.github.io/v2ex-skin-demo/
+ *
+ * 📄 工具介绍帖子
+ * https://v2ex.com/t/1159830
+ */\n`;
+
     fetch('./v2ex-export.css')
-      .then(r=>r.text())
-      .then(base=>{ snippet.value = compressCss(base + "\n" + vars); })
-      .catch(()=>{ snippet.value = vars; });
+      .then(r => r.text())
+      .then(base => {
+        const merged = base + "\n" + vars;
+        let out = compressCss ? compressCss(merged) : merged;
+
+        // 如果压缩后注释被移除了，则再前置一次（避免双重压缩导致注释丢失）
+        if (!out.startsWith('/*')) out = header + out;
+
+        snippet.value = out;
+        if (typeof lineCount !== 'undefined') {
+          lineCount.textContent = out.split('\n').length;
+        }
+      })
+      .catch(() => {
+        // 兜底：即便底稿加载失败，仍然加上署名注释 + 变量片段
+        const fallback = header + vars;
+        snippet.value = compressCss ? compressCss(fallback) : fallback;
+        if (typeof lineCount !== 'undefined') {
+          lineCount.textContent = snippet.value.split('\n').length;
+        }
+      });
   }
+
 
   function setTitleByPresetKey(key){
     const name = (PRESETS[key] && PRESETS[key][3]) || '自定义';
